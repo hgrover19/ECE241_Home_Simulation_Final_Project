@@ -36,17 +36,14 @@ module Audio_Controller(
 	audio_out_allowed,
 
 	AUD_XCK,
-	AUD_DACDAT
+	AUD_DACDAT,
 
-    clapDetected
+        clapDetected
 
-	output HEX0[0]
+	LEDR
     
 );
-    // Additional internal signals and registers for peak detection
-    reg  [AUDIO_DATA_WIDTH-1:0] peak_detected;
-    reg [AUDIO_DATA_WIDTH-1:0] peak_threshold;
-
+   
     // Parameters for peak detection
     localparam PEAK_THRESHOLD = 16'h0000;  // Need to adjust based on tests. Too high->no good, too low-> false +ves. 
 	// set to zero for now as a sanity check to see if this works.
@@ -58,6 +55,11 @@ module Audio_Controller(
 
 localparam AUDIO_DATA_WIDTH	= 32;
 localparam BIT_COUNTER_INIT	= 5'd31;
+ // Additional internal signals and registers for peak detection
+reg  [AUDIO_DATA_WIDTH-1:0] peak_detected;
+reg [AUDIO_DATA_WIDTH-1:0] peak_threshold;
+
+
 
 /*****************************************************************************
  *                             Port Declarations                             *
@@ -91,6 +93,7 @@ output	reg			audio_out_allowed;
 output				AUD_XCK;
 output				AUD_DACDAT;
 output              clapDetected; // added
+output LEDR[0];
 
 /*****************************************************************************
  *                 Internal wires and registers Declarations                 *
@@ -314,11 +317,11 @@ Audio_Clock Audio_Clock (
 always @(*)begin
     if(peak_detected == 0)begin
         assign clapDetected = 1b'0;
-		assign HEX0[0] = 1b'1;
-		assign HEX0[1] = 1b'1;
+				assign LEDR[0] = 1b'0;
     end
     else begin
         assign clapDetected = 1b'1;
+	    	assign LEDR[0] = 1b'1;
     end
 end
 
