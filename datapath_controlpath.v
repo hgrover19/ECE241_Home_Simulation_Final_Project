@@ -9,12 +9,96 @@ function DOOR  = 0
 
 */
 
-module project(SW, KEY, clock); //top level module instantiation
 
- 	input KEY[3:0];
-	input clock;
+module project(
+
+	input [5:0] SW,
+	input [3:0] KEY,
+	input CLOCK_50
+
+); //top level module instantiation
+	
+	//input wires to controlpath and datapath
+	wire keyboardin;
+	wire audin;
+	wire countDone; //FROM COUNTERS IN VGA DATAPATH
+	
+	//output wires from datapath
+	wire [7:0] xcoordoutput;
+	wire [6:0] ycoordoutput;
+	wire [3:0] audoutput;
+	
+	//enable signal wires
+	wire enable0;
+	wire enable1;
+	wire enable2;
+	wire enable3;
+	wire enable4;
+	wire selonoffsignal;
+	wire [1:0] selfunction;
+	wire clearstart;
+	wire drawenable;
+	wire loadenable;
+	wire [2:0] loadroomno;
+
+	controlpath controlpath_inst(
+		
+		.loadinputs(KEY[1]),
+		.clock(CLOCK_50),
+		.reset(KEY[0]),
+		.clear(KEY[2]),
+		.keyboardin(keyboardin),
+		.audin(audin),
+		.room0(SW[0]),
+		.room1(SW[1]),
+		.room2(SW[2]),
+		.room3(SW[3]),
+		.room4(SW[4]),
+		.alllocked(KEY[3]),
+		.countDone(countDone),
+		.enable0(enable0),
+		.enable1(enable1),
+		.enable2(enable2),
+		.enable3(enable3),
+		.enable4(enable4),
+		.selonoff(selonoffsignal),
+		.selfunct(selfunction),
+		.clearinitsignal(clearstart),
+		.loadenable(loadenable),
+		.selsw(loadroomno)
+		
+	);
+	
+	datapath datapath_inst(
+	
+		.clock(CLOCK_50),
+		.reset(KEY[0]),
+		.loadenable(loadenable),
+		.enable0(enable0),
+		.enable1(enable1),
+		.enable2(enable2),
+		.enable3(enable3),
+		.enable4(enable4),
+		.room0(SW[0]),
+		.room1(SW[1]),
+		.room2(SW[2]),
+		.room3(SW[3]),
+		.room4(SW[4]),
+		.selonoff(selonoffsignal),
+		.selsw(loadroomno),
+		.selfunct(selfunction),
+		.clearinitsignal(clearstart),
+		.keyboardin(keyboardin),
+		.audin(audin),
+		.xcoord(xcoordoutput),
+		.ycoord(ycoordoutput),
+		.audout(audoutput)
+	
+	);
+	
 
 endmodule
+
 
 module controlpath(
 
@@ -32,10 +116,8 @@ module controlpath(
 	output reg selonoff, //sort stored audio registers by ON/OFF for audio datapath
 	output reg [1:0] selfunct, //sort stored audio registers by Light/Door function
 	output reg clearinitsignal,
-	output reg drawen,
-	output reg Donesig,
 	output reg loadenable, //enable loading of inputs
-	output reg selsw
+	output reg [2:0] selsw
 	
 );
 
@@ -124,11 +206,8 @@ module controlpath(
 			enable3 = 1'b0;
 			enable4 = 1'b0;
 			selonoff = 1'b0;
-			selLD = 1'b0;
-			selroomno = 4'b0;
+			selfunct = 1'b0;
 			clearinitsignal = 1'b0;
-			drawen = 1'b0;
-			Donesig = 1'b0;
 			
 			case(current_state)
 			
@@ -259,20 +338,15 @@ module controlpath(
 				
 				ALLLOCKED: begin
 					selfunct = 2'b01;
-				
-				DONE_DRAW: begin
-					Donesig = 1'b1;
 				end
 				
 				CLEAR: begin
 					clearinitsignal = 1'b1;
 				end
 			
-			end
-			
-		endcase
+			endcase
 		
-	end
+		end
 		
 	
 	//FFs controlling transition between states
@@ -301,13 +375,13 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 	input enable0, enable1, enable2, enable3, enable4,
 	input room0, room1, room2, room3, room4, //switch input (select room number 0-9)
 	input selonoff,
+	input [2:0] selsw,
 	input [1:0] selfunct,
 	input clearinitsignal,
-	input drawen,
-	input Donesig,
 	input keyboardin, //keyboard input (L or D)
 	input audin,	//Audio input (on or off, 1/0)
-	output reg xcoord, ycoord,
+	output reg [7:0] xcoord, 
+	output reg [6:0] ycoord,
 	output reg [3:0] audout
 
 );
@@ -337,7 +411,7 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 	reg funct4;
 	reg onoff4;
 	
-	wire [1:0] coordsel0, coordsel1, coordsel2, coordsel3, coordsel4; //to select x and y coordinates for each room
+	reg [1:0] coordsel0, coordsel1, coordsel2, coordsel3, coordsel4; //to select x and y coordinates for each room
 	
 	//load audio signal registers
 	reg [3:0] L1aud;
@@ -488,7 +562,7 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 				
 				loadkeyboard <= keyboardin;
 				
-				loadaudio <= audioin;
+				loadaudio <= audin;
 				
 			end
 			
@@ -496,7 +570,7 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 				
 				funct0 <= loadkeyboard;
 				
-				onoff0 <= onoff0^audioin;
+				onoff0 <= onoff0^audin;
 				
 				coordsel0 <= {~funct0, onoff0};
 				
@@ -535,9 +609,9 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 				
 				funct1 <= loadkeyboard;
 				
-				onoff1 <= onff1^audioin;
+				onoff1 <= onoff1^audin;
 				
-				coordsel1 = {~funct1, onoff0};
+				coordsel1 <= {~funct1, onoff0};
 				
 				case (coordsel1) //multiplexer choosing x and y coordinates for printing in room 1
 				
@@ -574,9 +648,9 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 							
 				funct2 <= loadkeyboard;
 				
-				onoff2 <= onoff2^audioin;
+				onoff2 <= onoff2^audin;
 				
-				coordsel2 = {~funct2, onoff0};
+				coordsel2 <= {~funct2, onoff0};
 				
 				case (coordsel2) //multiplexer choosing x and y coordinates for printing in room 2
 				
@@ -613,9 +687,9 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 				
 				funct3 <= loadkeyboard;
 				
-				onoff3 <= onoff3^audioin;
+				onoff3 <= onoff3^audin;
 				
-				coordsel3 = {~funct0, onoff0};
+				coordsel3 <= {~funct0, onoff0};
 				
 				case (coordsel3) //multiplexer choosing x and y coordinates for printing in room 1
 				
@@ -652,9 +726,9 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 				
 				funct4 <= loadkeyboard;
 				
-				onoff4 <= onoff4^audioin;
+				onoff4 <= onoff4^audin;
 				
-				coordsel4 = {~funct0, onoff0};
+				coordsel4 <= {~funct0, onoff0};
 				
 				case (coordsel4) //multiplexer choosing x and y coordinates for printing in room 1
 				
