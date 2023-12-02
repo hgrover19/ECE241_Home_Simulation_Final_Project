@@ -1,0 +1,137 @@
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 1991-2015 Altera Corporation. All rights reserved.
+# Your use of Altera Corporation's design tools, logic functions 
+# and other software and tools, and its AMPP partner logic 
+# functions, and any output files from any of the foregoing 
+# (including device programming or simulation files), and any 
+# associated documentation or information are expressly subject 
+# to the terms and conditions of the Altera Program License 
+# Subscription Agreement, the Altera Quartus II License Agreement,
+# the Altera MegaCore Function License Agreement, or other 
+# applicable license agreement, including, without limitation, 
+# that your use is for the sole purpose of programming logic 
+# devices manufactured by Altera and sold by Altera or its 
+# authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+#
+# -------------------------------------------------------------------------- #
+#
+# Quartus II 64-Bit
+# Version 15.0.0 Build 145 04/22/2015 SJ Full Version
+# Date created = 12:08:59  February 29, 2016
+#
+# -------------------------------------------------------------------------- #
+#
+# Notes:
+#
+# 1) The default values for assignments are stored in the file:
+#		mouse_assignment_defaults.qdf
+#    If this file doesn't exist, see file:
+#		assignment_defaults.qdf
+#
+# 2) Altera recommends that you do not modify this file. This
+#    file is updated automatically by the Quartus II software
+#    and any changes you make may be lost or overwritten.
+#
+# -------------------------------------------------------------------------- #
+
+
+set_global_assignment -name FAMILY "Cyclone V"
+set_global_assignment -name DEVICE 5CSEMA5F31C6
+set_global_assignment -name TOP_LEVEL_ENTITY mouse
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION 15.0.0
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "12:08:59  FEBRUARY 29, 2016"
+set_global_assignment -name LAST_QUARTUS_VERSION 15.0.0
+set_global_assignment -name VERILOG_FILE transmit.v
+set_global_assignment -name VERILOG_FILE mouse.v
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 256
+set_global_assignment -name EDA_SIMULATION_TOOL "ModelSim-Altera (Verilog)"
+set_global_assignment -name EDA_TIME_SCALE "1 ps" -section_id eda_simulation
+set_global_assignment -name EDA_OUTPUT_DATA_FORMAT "VERILOG HDL" -section_id eda_simulation
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "2.5 V"
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -entity HEX_decoder -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -entity HEX_decoder -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -entity HEX_decoder -section_id Top
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -entity I2C_programmer -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -entity I2C_programmer -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -entity I2C_programmer -section_id Top
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -entity decoder -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -entity decoder -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -entity decoder -section_id Top
+set_location_assignment PIN_AH28 -to hex0_out[6]
+set_location_assignment PIN_AG28 -to hex0_out[5]
+set_location_assignment PIN_AF28 -to hex0_out[4]
+set_location_assignment PIN_AG27 -to hex0_out[3]
+set_location_assignment PIN_AE28 -to hex0_out[2]
+set_location_assignment PIN_AE27 -to hex0_out[1]
+set_location_assignment PIN_AE26 -to hex0_out[0]
+set_location_assignment PIN_AD27 -to hex1_out[6]
+set_location_assignment PIN_AF30 -to hex1_out[5]
+set_location_assignment PIN_AF29 -to hex1_out[4]
+set_location_assignment PIN_AG30 -to hex1_out[3]
+set_location_assignment PIN_AH30 -to hex1_out[2]
+set_location_assignment PIN_AH29 -to hex1_out[1]
+set_location_assignment PIN_AJ29 -to hex1_out[0]
+set_location_assignment PIN_AC30 -to hex2_out[6]
+set_location_assignment PIN_AC29 -to hex2_out[5]
+set_location_assignment PIN_AD30 -to hex2_out[4]
+set_location_assignment PIN_AC28 -to hex2_out[3]
+set_location_assignment PIN_AD29 -to hex2_out[2]
+set_location_assignment PIN_AE29 -to hex2_out[1]
+set_location_assignment PIN_AB23 -to hex2_out[0]
+set_location_assignment PIN_AB22 -to hex3_out[6]
+set_location_assignment PIN_AB25 -to hex3_out[5]
+set_location_assignment PIN_AB28 -to hex3_out[4]
+set_location_assignment PIN_AC25 -to hex3_out[3]
+set_location_assignment PIN_AD25 -to hex3_out[2]
+set_location_assignment PIN_AC27 -to hex3_out[1]
+set_location_assignment PIN_AD26 -to hex3_out[0]
+set_location_assignment PIN_W25 -to hex4_out[6]
+set_location_assignment PIN_V23 -to hex4_out[5]
+set_location_assignment PIN_W24 -to hex4_out[4]
+set_location_assignment PIN_W22 -to hex4_out[3]
+set_location_assignment PIN_Y24 -to hex4_out[2]
+set_location_assignment PIN_Y23 -to hex4_out[1]
+set_location_assignment PIN_AA24 -to hex4_out[0]
+set_location_assignment PIN_AA25 -to hex5_out[6]
+set_location_assignment PIN_AA26 -to hex5_out[5]
+set_location_assignment PIN_AB26 -to hex5_out[4]
+set_location_assignment PIN_AB27 -to hex5_out[3]
+set_location_assignment PIN_Y27 -to hex5_out[2]
+set_location_assignment PIN_AA28 -to hex5_out[1]
+set_location_assignment PIN_V25 -to hex5_out[0]
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -entity decoder -section_id Top
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -entity I2C_programmer -section_id Top
+set_location_assignment PIN_AF14 -to clk_50
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -entity HEX_decoder -section_id Top
+set_location_assignment PIN_AF9 -to enable
+set_location_assignment PIN_AG17 -to gpio[15]
+set_location_assignment PIN_AF16 -to gpio[14]
+set_location_assignment PIN_AE16 -to gpio[13]
+set_location_assignment PIN_AG16 -to gpio[12]
+set_location_assignment PIN_AH17 -to gpio[11]
+set_location_assignment PIN_AH18 -to gpio[10]
+set_location_assignment PIN_AJ16 -to gpio[9]
+set_location_assignment PIN_AD7 -to ps2_clk
+set_location_assignment PIN_AE7 -to ps2_data
+set_location_assignment PIN_AB12 -to reset
+set_location_assignment PIN_AC12 -to send_enable
+set_location_assignment PIN_AJ17 -to gpio[8]
+set_location_assignment PIN_AJ19 -to gpio[7]
+set_location_assignment PIN_AK19 -to gpio[6]
+set_location_assignment PIN_AK18 -to gpio[5]
+set_location_assignment PIN_AK16 -to gpio[4]
+set_location_assignment PIN_Y18 -to gpio[3]
+set_location_assignment PIN_AD17 -to gpio[2]
+set_location_assignment PIN_Y17 -to gpio[1]
+set_location_assignment PIN_AC18 -to gpio[0]
+set_global_assignment -name CDF_FILE Chain4.cdf
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
+set_global_assignment -name CDF_FILE output_files/Chain1.cdf
