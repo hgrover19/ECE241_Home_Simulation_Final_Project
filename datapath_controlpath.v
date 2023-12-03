@@ -1,3 +1,4 @@
+`timescale 1ns/1ns
 /*
 THE FOLLOWING ASSUMPTIONS ARE MADE:
 
@@ -25,14 +26,12 @@ module project(
 	wire [7:0] xcoordoutput;
 	wire [6:0] ycoordoutput;
 	wire [3:0] audoutput;
-	wire loadkeyboard;
+	wire [2:0] loadkeyboard;
 	wire roomnoreg;
 	wire loadaudio;
 	
 	//
-	wire [1:0] coordsel0;
-	wire funct0;
-	wire onoff0;
+	wire [5:0] coordsel0;
 	
 	//enable signal wires
 	wire enable0;
@@ -101,8 +100,6 @@ module project(
 		.ycoord(ycoordoutput),
 		.audout(audoutput),
 		.coordsel0(coordsel0),
-		.funct0(funct0),
-		.onoff0(onoff0),
 		.loadkeyboard(loadkeyboard),
 		.roomnoreg(roomnoreg),
 		.loadaudio(loadaudio)
@@ -402,10 +399,8 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 	output reg [7:0] xcoord, 
 	output reg [6:0] ycoord,
 	output reg [3:0] audout,
-	output reg [1:0] coordsel0,
-	output reg funct0,
-	output reg onoff0,
-	output reg loadkeyboard,
+	output reg [5:0] coordsel0,
+	output reg [2:0] loadkeyboard,
 	output reg roomnoreg,
 	output reg loadaudio
 
@@ -436,7 +431,7 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 	reg funct4;
 	reg onoff4;
 	
-	reg [1:0] coordsel1, coordsel2, coordsel3, coordsel4; //to select x and y coordinates for each room (add back coordsel0)
+	reg [5:0] coordsel1, coordsel2, coordsel3, coordsel4; //to select x and y coordinates for each room (add back coordsel0)
 	
 	//load audio signal registers
 	reg [3:0] L1aud;
@@ -446,69 +441,39 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 	reg [3:0] alllockedaud;
 			
 	//also, load x and y coordinates for each vga display image
-	reg [7:0] L00x;
-	reg [6:0] L00y;
-	reg [7:0] L01x;
-	reg [6:0] L01y;
-	reg [7:0] D00x;
-	reg [6:0] D00y;
-	reg [7:0] D01x;
-	reg [6:0] D01y;
+	reg [7:0] L0x;
+	reg [6:0] L0y;
+	reg [7:0] D0x;
+	reg [6:0] D0y;
 			
-	reg [7:0] L10x;
-	reg [6:0] L10y;
-	reg [7:0] L11x;
-	reg [6:0] L11y;
-	reg [7:0] D10x;
-	reg [6:0] D10y;
-	reg [7:0] D11x;
-	reg [6:0] D11y;
+	reg [7:0] L1x;
+	reg [6:0] L1y;
+	reg [7:0] D1x;
+	reg [6:0] D1y;
 			
-	reg [7:0] L20x;
-	reg [6:0] L20y;
-	reg [7:0] L21x;
-	reg [6:0] L21y;
-	reg [7:0] D20x;
-	reg [6:0] D20y;
-	reg [7:0] D21x;
-	reg [6:0] D21y;
+	reg [7:0] L2x;
+	reg [6:0] L2y;
+	reg [7:0] D2x;
+	reg [6:0] D2y;
 			
-	reg [7:0] L30x;
-	reg [6:0] L30y;
-	reg [7:0] L31x;
-	reg [6:0] L31y;
-	reg [7:0] D30x;
-	reg [6:0] D30y;
-	reg [7:0] D31x;
-	reg [6:0] D31y;
+	reg [7:0] L3x;
+	reg [6:0] L3y;
+	reg [7:0] D3x;
+	reg [6:0] D3y;
 			
-	reg [7:0] L40x;
-	reg [6:0] L40y;
-	reg [7:0] L41x;
-	reg [6:0] L41y;
-	reg [7:0] D40x;
-	reg [6:0] D40y;
-	reg [7:0] D41x;
-	reg [6:0] D41y;	
+	reg [7:0] L4x;
+	reg [6:0] L4y;
+	reg [7:0] D4x;
+	reg [6:0] D4y;	
 	
 	//datapath logic
-	always@ (posedge clock) begin
+	always@ (*) begin
 	
 		if (reset) begin
 
 			loadkeyboard <= 0;
 			roomnoreg <= 0;
 			loadaudio <= 0;
-			funct0 <= 0;
-			onoff0 <= 0;
-			funct1 <= 0;
-			onoff1 <= 0;
-			funct2 <= 0;
-			onoff2 <= 0;
-			funct3 <= 0;
-			onoff3 <= 0;
-			funct4 <= 0;
-			onoff4 <= 0;
 			
 			//load audio signal registers
 			L1aud <= 3'b000;
@@ -521,7 +486,7 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 			L0x <= 8'd60;
 			L0y <= 7'd73;
 			D0x <= 8'd69;
-			L0y <= 7'd69;
+			D0y <= 7'd69;
 			
 			L1x <= 8'd69;
 			L1y <= 7'd69;
@@ -578,32 +543,18 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 			
 			else if (enable0) begin //store function and on/off into room 0 registers
 				
-				funct0 <= loadkeyboard;
-				
-				onoff0 <= onoff0^audin;
-				
-				coordsel0 <= {~loadkeyboard, onoff0}; //DEBUG THIS LINE : possible solution is to verify if funct0, onoff0 actually store values correctly
+				coordsel0 <= {loadkeyboard, selsw}; //DEBUG THIS LINE : possible solution is to verify if funct0, onoff0 actually store values correctly
 				
 				case (coordsel0) //multiplexer choosing x and y coordinates for printing in room 0
 				
-					2'b00: begin
-						xcoord <= L00x;
-						ycoord <= L00y;
+					6'b000000: begin //room 0, function D
+						xcoord <= D0x;
+						ycoord <= D0y;
 					end
 					
-					2'b01: begin
-						xcoord <= L01x;
-						ycoord <= L01y;
-					end
-					
-					2'b10: begin
-						xcoord <= D00x;
-						ycoord <= D00y;
-					end
-					
-					2'b11: begin
-						xcoord <= D01x;
-						ycoord <= D01y;
+					6'b001000: begin //room 0, function L
+						xcoord <= L0x;
+						ycoord <= L0y;
 					end
 					
 					default: begin
@@ -617,28 +568,18 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 			
 			else if (enable1) begin
 				
-				coordsel1 <= {loadkeyboard, audin};
+				coordsel1 <= {loadkeyboard, selsw};
 				
 				case (coordsel1) //multiplexer choosing x and y coordinates for printing in room 1
 				
-					2'b: begin
-						xcoord <= L10x;
-						ycoord <= L10y;
+					6'b000001: begin
+						xcoord <= D1x;
+						ycoord <= D1y;
 					end
 					
-					2'b01: begin
-						xcoord <= L11x;
-						ycoord <= L11y;
-					end
-					
-					2'b10: begin
-						xcoord <= D10x;
-						ycoord <= D10y;
-					end
-					
-					2'b11: begin
-						xcoord <= D11x;
-						ycoord <= D11y;
+					6'b001001: begin
+						xcoord <= L1x;
+						ycoord <= L1y;
 					end
 					
 					default: begin
@@ -651,33 +592,19 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 			end
 			
 			else if (enable2) begin
-							
-				funct2 <= loadkeyboard;
 				
-				onoff2 <= onoff2^audin;
-				
-				coordsel2 <= {~funct2, onoff2};
+				coordsel2 <= {loadkeyboard, selsw};
 				
 				case (coordsel2) //multiplexer choosing x and y coordinates for printing in room 2
 				
-					2'b00: begin
-						xcoord <= L20x;
-						ycoord <= L20y;
+					6'b000010: begin
+						xcoord <= D2x;
+						ycoord <= D2y;
 					end
 					
-					2'b01: begin
-						xcoord <= L21x;
-						ycoord <= L21y;
-					end
-					
-					2'b10: begin
-						xcoord <= D20x;
-						ycoord <= D20y;
-					end
-					
-					2'b11: begin
-						xcoord <= D21x;
-						ycoord <= D21y;
+					6'b001010: begin
+						xcoord <= L2x;
+						ycoord <= L2y;
 					end
 					
 					default: begin
@@ -691,32 +618,18 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 			
 			else if (enable3) begin
 				
-				funct3 <= loadkeyboard;
-				
-				onoff3 <= onoff3^audin;
-				
-				coordsel3 <= {~funct3, onoff3};
+				coordsel3 <= {loadkeyboard, selsw};
 				
 				case (coordsel3) //multiplexer choosing x and y coordinates for printing in room 1
 				
-					2'b00: begin
-						xcoord <= L30x;
-						ycoord <= L30y;
+					6'b000011: begin
+						xcoord <= D3x;
+						ycoord <= D3y;
 					end
 					
-					2'b01: begin
-						xcoord <= L31x;
-						ycoord <= L31y;
-					end
-					
-					2'b10: begin
-						xcoord <= D30x;
-						ycoord <= D30y;
-					end
-					
-					2'b11: begin
-						xcoord <= D31x;
-						ycoord <= D31y;
+					6'b001011: begin
+						xcoord <= L3x;
+						ycoord <= L3y;
 					end
 					
 					default: begin
@@ -730,37 +643,18 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 			
 			else if (enable4) begin
 				
-				funct4 <= loadkeyboard;
-				
-				onoff4 <= onoff4^audin;
-				
-				coordsel4 <= {~funct4, onoff4};
+				coordsel4 <= {loadkeyboard, selsw};
 				
 				case (coordsel4) //multiplexer choosing x and y coordinates for printing in room 1
 				
-					2'b00: begin
-						xcoord <= L40x;
-						ycoord <= L40y;
+					6'b001100: begin
+						xcoord <= L4x;
+						ycoord <= L4y;
 					end
 					
-					2'b01: begin
-						xcoord <= L41x;
-						ycoord <= L41y;
-					end
-					
-					2'b10: begin
-						xcoord <= D40x;
-						ycoord <= D40y;
-					end
-					
-					2'b11: begin
-						xcoord <= D41x;
-						ycoord <= D41y;
-					end
-					
-					default: begin
-						xcoord <= 0;
-						ycoord <= 0;
+					6'b000100: begin
+						xcoord <= D4x;
+						ycoord <= D4y;
 					end
 				
 				endcase
@@ -773,46 +667,34 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 			end
 		
 		end
-		
-	end
 	
 		
 		//multiplexers for audio output
 		
-		always@(*) begin
-		
 			case (selfunct)
 				
 				2'b00: begin //case: L mode
+				
+					if (selonoff == 1'b0) begin
+						audout <= L0aud;
+					end
 					
-					case (selonoff)
-						
-						1'b0: begin //output L0 audio
-							audout <= L0aud;
-						end
-						
-						1'b1: begin //output L1 audio
-							audout <= L1aud;
-						end
-						
-					endcase
+					else if (selonoff == 1'b1) begin
+						audout <= L1aud;
+					end
 					
 				end
 				
 				2'b10: begin //case: D mode
 				
-					case (selonoff)
-						
-						1'b0: begin
-							audout <= D0aud;
-						end
-						
-						1'b1: begin
-							audout <= D1aud;
-						end
-						
-					endcase
-				
+					if (selonoff == 1'b0) begin
+						audout <= D0aud;
+					end
+					
+					else if (selonoff == 1'b1) begin
+						audout <= D1aud;
+					end
+			
 				end
 				
 				2'b01: begin //case all locked mode
@@ -831,6 +713,7 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 			endcase
 		
 		end
+		
 
 
 endmodule
