@@ -22,7 +22,7 @@ module transmit (
  reset,			// master reset
  ps2_clk, 		// ps2 clock
  ps2_data,	 	// ps2 data
- LEDR // added
+ LEDR; // added
 );
 
  
@@ -378,6 +378,45 @@ wire sync_time = (xy_counter < 7'd32)? 1'b0 : 1'b1; // end of each load cycle
 		end */
 		
 		
+always @(posedge clk or negedge enable_send) begin
+   if (!enable_send) begin
+      // Default LED settings
+      LEDR[0] = 1'b0;
+      LEDR[1] = 1'b0;
+      LEDR[2] = 1'b0;
+      LEDR[3] = 1'b0;
+   end else begin
+      case (state_value_x)
+         compare_left: begin
+            LEDR[0] = 1'b1;
+            LEDR[1] = 1'b0;
+            LEDR[2] = 1'b0;
+            LEDR[3] = 1'b0;
+         end
+         compare_right: begin
+            LEDR[0] = 1'b0;
+            LEDR[1] = 1'b1;
+            LEDR[2] = 1'b0;
+            LEDR[3] = 1'b0;
+         end
+         no_change_x: begin
+            // No movement in the x-direction
+            LEDR[0] = x_value[8] ? 1'b1 : 1'b0;
+            LEDR[1] = x_value[8] ? 1'b0 : 1'b1;
+            LEDR[2] = 1'b0;
+            LEDR[3] = 1'b0;
+         end
+         // Add cases for other conditions as needed
+         default: begin
+            // Default case
+            LEDR[0] = 1'b0;
+            LEDR[1] = 1'b0;
+            LEDR[2] = 1'b0;
+            LEDR[3] = 1'b0;
+         end
+      endcase
+   end
+end
 
 
 
@@ -475,44 +514,4 @@ wire sync_time = (xy_counter < 7'd32)? 1'b0 : 1'b1; // end of each load cycle
 		
 		end
 		
-always @(posedge clk or negedge enable_send) begin
-   if (!enable_send) begin
-      // Default LED, set off
-      LEDR[0] = 1'b0;
-      LEDR[1] = 1'b0;
-      LEDR[2] = 1'b0;
-      LEDR[3] = 1'b0;
-   end else begin
-      case (state_value_x) // movement 
-         compare_left: begin
-            LEDR[0] = 1'b1;
-            LEDR[1] = 1'b0;
-            LEDR[2] = 1'b0;
-            LEDR[3] = 1'b0;
-         end
-         compare_right: begin
-            LEDR[0] = 1'b0;
-            LEDR[1] = 1'b1;
-            LEDR[2] = 1'b0;
-            LEDR[3] = 1'b0;
-         end
-         no_change_x: begin
-            // No movement in the x-direction
-            LEDR[0] = x_value[8] ? 1'b1 : 1'b0;
-            LEDR[1] = x_value[8] ? 1'b0 : 1'b1;
-            LEDR[2] = 1'b0;
-            LEDR[3] = 1'b0;
-         end
-         // Add cases for other conditions as needed
-         default: begin
-            // Default case
-            LEDR[0] = 1'b0;
-            LEDR[1] = 1'b0;
-            LEDR[2] = 1'b0;
-            LEDR[3] = 1'b0;
-         end
-      endcase
-   end
-end
-
  endmodule		

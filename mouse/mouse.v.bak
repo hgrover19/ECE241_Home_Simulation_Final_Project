@@ -8,7 +8,7 @@
 
 // change made to remove the hex displays, try to ooutput to the LED's
 // will need to include the standard QSF file to display on the LED's.
-// compiles.
+
 module mouse(
 
 output LEDR, // use to show x-movement of the mouse
@@ -17,7 +17,7 @@ inout ps2_clk 	, 	// ps2 clock
 inout ps2_data	, 	// ps2 data
 input send_enable,
  input reset,
- output gpio  			// 40 pin header
+ input gpio  			// 40 pin header
 
 
 );     
@@ -113,8 +113,7 @@ input send_enable,
 	 .enable_send(enable_send),
 	 .reset(reset),
 	 .ps2_clk (ps2_clk), 		
-	 .ps2_data(ps2_data) ,
-	 .LEDR(LEDR)		
+	 .ps2_data(ps2_data) 		
 	);
  
  //////////////////////////////////////////////////////
@@ -293,14 +292,12 @@ always @(negedge reset or posedge ps2_clk) begin
  assign hex4_out = hex_out4;
  assign hex5_out = hex_out5;
  */ 
-
-// assigned in the transmit module
-/*  assign LEDR[0] = hex_out1[0];
+ assign LEDR[0] = hex_out1[0];
  assign LEDR[1] = hex_out2[0];
  assign LEDR[2] = hex_out3[0];
  assign LEDR[3] = hex_out4[0];
  assign LEDR[4] = hex_out5[0];
- */
+
  ///////////////////////////////////////////
  // directing signals to GPIO bus      /////
  // for testing and analyzing signals  /////
