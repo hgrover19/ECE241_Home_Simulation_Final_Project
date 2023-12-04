@@ -1,3 +1,4 @@
+
 module datapath( //note: instantiate room coordinate selection FSMs inside datapath
 
 	input clock,
@@ -12,11 +13,13 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 	input keyboardin, //keyboard input (L or D)
 	input audin,	//Audio input (on or off, 1/0)
 	output reg [7:0] xcoord, 
-	output reg [6:0] ycoord,
+	output reg [6:0] ycoord
+	//output reg [3:0] audout
+
 );
 	
 	//declare storage registers
-	reg [2:0] loadkeyboard; //register storing keyboard input
+	reg [2:0]loadkeyboard; //register storing keyboard input
 	reg roomnoreg; //register storing room number
 	reg loadaudio; //register storing audio input
 	
@@ -129,6 +132,11 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 		else begin
 			
 			if (loadenable) begin
+			
+				loadkeyboard = keyboardin;
+				
+				loadaudio = audin;
+				
 				case (selsw) //select switch input to store into room number register
 				
 					3'd0: 
@@ -145,10 +153,6 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 					default: roomnoreg =1'b0;
 					
 				endcase
-				
-				loadkeyboard <= keyboardin;
-				
-				loadaudio <= audin;
 				
 			end
 			
@@ -280,8 +284,7 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 		end
 		
 	end
-
-		
+	
 
 
 endmodule
