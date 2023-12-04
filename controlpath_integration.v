@@ -1,4 +1,5 @@
-module controlpath_integration(
+
+module controlpath(
 
 	input loadinputs, //the pushbutton, loadinputs
 	input clock, 
@@ -108,6 +109,7 @@ module controlpath_integration(
 			selfunct = 1'b0;
 			clearinitsignal = 1'b0;
 			loadenable = 1'b0;
+			commandaudioenable = 1'b0;
 			
 			case(current_state)
 			
@@ -273,4 +275,4 @@ module controlpath_integration(
 		end
 				
 	
-endmodule	
+endmodule		
