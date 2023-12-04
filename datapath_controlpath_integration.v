@@ -16,15 +16,20 @@ module project_integration(
 	input CLOCK_50
 
 ); //top level module instantiation
+
+	parameter MAX_X_PIXELS = 8'd160;
+	parameter MAX_Y_PIXELS = 7'd120;
 	
 	//input wires to controlpath and datapath
 	wire keyboardin;
 	wire audin;
-	wire countDone; //FROM COUNTERS IN VGA DATAPATH
+	wire [3:0] plotcounter; 
 	
 	//output wires from datapath
 	wire [7:0] xcoordoutput;
 	wire [6:0] ycoordoutput;
+	wire [7:0] clearxcoord;
+	wire [6:0] clearycoord;
 	//wire [3:0] audoutput;
 	
 	
@@ -40,6 +45,7 @@ module project_integration(
 	wire drawenable;
 	wire loadenable;
 	wire [2:0] selsw;
+	wire drawen;
 
 	controlpath controlpath_inst(
 		
@@ -54,8 +60,11 @@ module project_integration(
 		.room2(SW[2]),
 		.room3(SW[3]),
 		.room4(SW[4]),
-		.alllocked(KEY[3]),
-		.countDone(countDone),
+		.plotcounter(plotcounter),
+		.MAX_X_PIXELS(MAX_X_PIXELS),
+		.MAX_Y_PIXELS(MAX_Y_PIXELS),
+		.clear_x(clearxcoord),
+		.clear_y(clearycoord),
 		.enable0(enable0),
 		.enable1(enable1),
 		.enable2(enable2),
@@ -66,7 +75,8 @@ module project_integration(
 		.clearinitsignal(clearstart),
 		.loadenable(loadenable),
 		.selsw(selsw),
-		.commandaudioenable(commandaudioenable)
+		.commandaudioenable(commandaudioenable),
+		.drawen(drawen)
 		
 	);
 	
@@ -92,8 +102,15 @@ module project_integration(
 		.clearinitsignal(clearstart),
 		.keyboardin(SW[8]),
 		.audin(audin),
-		.xcoord(xcoordoutput),
-		.ycoord(ycoordoutput)
+		.drawen(drawen),
+		.MAX_X_PIXELS(MAX_X_PIXELS),
+		.MAX_Y_PIXELS(MAX_Y_PIXELS),
+		.xcoord(xcoord),
+		.ycoord(ycoord),
+		.plotcounter(plotcounter),
+		.colour(colour),
+		.clearxcounter(clearxcounter),
+		.clearycounter(clearycounter)
 		//.audout(audoutput)
 	
 	);
