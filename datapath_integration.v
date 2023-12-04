@@ -1,4 +1,3 @@
-
 module datapath( //note: instantiate room coordinate selection FSMs inside datapath
 
 	input clock,
@@ -12,8 +11,15 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 	input clearinitsignal,
 	input keyboardin, //keyboard input (L or D)
 	input audin,	//Audio input (on or off, 1/0)
+	input drawen,
+	input [7:0] MAX_X_PIXELS,
+	input [6:0] MAX_Y_PIXELS,
 	output reg [7:0] xcoord, 
-	output reg [6:0] ycoord
+	output reg [6:0] ycoord,
+	output reg [3:0] plotcounter,
+	output reg [2:0] colour,
+	output reg [7:0] clearxcounter,
+	output reg [8:0] clearycounter
 	//output reg [3:0] audout
 
 );
@@ -22,6 +28,10 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 	reg [2:0]loadkeyboard; //register storing keyboard input
 	reg roomnoreg; //register storing room number
 	reg loadaudio; //register storing audio input
+	reg [7:0] x_register;
+	reg [6:0] y_register;
+	reg [7:0] startxcoord;
+	reg [6:0] startycoord;
 	
 	//ROOM 0 REGISTERS
 	//reg funct0;
@@ -51,7 +61,6 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 	reg [3:0] L0aud;
 	reg [3:0] D1aud;
 	reg [3:0] D0aud;
-	reg [3:0] alllockedaud;
 	*/
 			
 	//also, load x and y coordinates for each vga display image
@@ -94,7 +103,6 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 			//L0aud <= 3'b001;
 			//D1aud <= 3'b010;
 			//D0aud <= 3'b011;
-			//alllockedaud <= 3'b100;
 			
 			//also, load x and y coordinates for each vga display image
 			L0x <= 8'd60;
@@ -133,9 +141,9 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 			
 			if (loadenable) begin
 			
-				loadkeyboard = keyboardin;
+				loadkeyboard <= keyboardin;
 				
-				loadaudio = audin;
+				loadaudio <= loadaudio ^ audin;
 				
 				case (selsw) //select switch input to store into room number register
 				
@@ -163,18 +171,18 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 				case (coordsel0) //multiplexer choosing x and y coordinates for printing in room 0
 				
 					6'b000000: begin //room 0, function D
-						xcoord <= D0x;
-						ycoord <= D0y;
+						startxcoord <= D0x;
+						startycoord <= D0y;
 					end
 					
 					6'b001000: begin //room 0, function L
-						xcoord <= L0x;
-						ycoord <= L0y;
+						startxcoord <= L0x;
+						startycoord <= L0y;
 					end
 					
 					default: begin
-						xcoord <= 0;
-						ycoord <= 0;
+						startxcoord <= 0;
+						startycoord <= 0;
 					end
 				
 				endcase
@@ -188,18 +196,18 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 				case (coordsel1) //multiplexer choosing x and y coordinates for printing in room 1
 				
 					6'b000001: begin
-						xcoord <= D1x;
-						ycoord <= D1y;
+						startxcoord <= D1x;
+						startycoord <= D1y;
 					end
 					
 					6'b001001: begin
-						xcoord <= L1x;
-						ycoord <= L1y;
+						startxcoord <= L1x;
+						startycoord <= L1y;
 					end
 					
 					default: begin
-						xcoord <= 0;
-						ycoord <= 0;
+						startxcoord <= 0;
+						startycoord <= 0;
 					end
 				
 				endcase
@@ -213,18 +221,18 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 				case (coordsel2) //multiplexer choosing x and y coordinates for printing in room 2
 				
 					6'b000010: begin
-						xcoord <= D2x;
-						ycoord <= D2y;
+						startxcoord <= D2x;
+						startycoord <= D2y;
 					end
 					
 					6'b001010: begin
-						xcoord <= L2x;
-						ycoord <= L2y;
+						startxcoord <= L2x;
+						startycoord <= L2y;
 					end
 					
 					default: begin
-						xcoord <= 0;
-						ycoord <= 0;
+						startxcoord <= 0;
+						startycoord <= 0;
 					end
 				
 				endcase
@@ -238,18 +246,18 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 				case (coordsel3) //multiplexer choosing x and y coordinates for printing in room 1
 				
 					6'b000011: begin
-						xcoord <= D3x;
-						ycoord <= D3y;
+						startxcoord <= D3x;
+						startycoord <= D3y;
 					end
 					
 					6'b001011: begin
-						xcoord <= L3x;
-						ycoord <= L3y;
+						startxcoord <= L3x;
+						startycoord <= L3y;
 					end
 					
 					default: begin
-						xcoord <= 0;
-						ycoord <= 0;
+						startxcoord <= 0;
+						startycoord <= 0;
 					end
 				
 				endcase
@@ -263,13 +271,18 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 				case (coordsel4) //multiplexer choosing x and y coordinates for printing in room 1
 				
 					6'b001100: begin
-						xcoord <= L4x;
-						ycoord <= L4y;
+						startxcoord <= L4x;
+						startycoord <= L4y;
 					end
 					
 					6'b000100: begin
-						xcoord <= D4x;
-						ycoord <= D4y;
+						startxcoord <= D4x;
+						startycoord <= D4y;
+					end
+					
+					default: begin
+						startxcoord <= 0;
+						startycoord <= 0;
 					end
 				
 				endcase
@@ -277,13 +290,78 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 			end
 			
 			else if (clearinitsignal) begin
-				xcoord <= 0;
-				ycoord <= 0;
+				startxcoord <= 0;
+				startycoord <= 0;
+				
+				xcoord <= clearxcounter;
+				ycoord <= clearycounter;
+				colour <= 3'b0;
+				
 			end
+			
+			else if ((drawen == 1'b1) && (loadkeyboard == 1'b1)) begin //when the door/light is ON
+			
+				xcoord <= x_register + plotcounter[1:0];
+				ycoord <= y_register + plotcounter[3:2];
+				colour <= 3'b110;
+			
+			end
+			
+			else if ((drawen == 1'b1) && (loadkeyboard == 1'b0)) begin //when the door/light is OFF
+			
+				xcoord <= x_register + plotcounter[1:0];
+				ycoord <= y_register + plotcounter[3:2];
+				colour <= 3'b111;
+			
+			end
+			
 		
 		end
 		
 	end
+	
+	always@ (posedge clock)
+		begin
+			
+			if (reset) begin
+				plotcounter <= 0;
+				clearxcounter <= 0;
+				clearycounter <= 0;
+			end
+			
+			else if (drawen) begin
+				
+				plotcounter <= plotcounter + 1;
+				
+			end
+			
+			else if (plotcounter == 4'd15) begin
+				
+				plotcounter <= 0;
+				
+			end
+			
+			else if ((clearxcounter == (MAX_X_PIXELS - 1)) && (clearycounter == (MAX_Y_PIXELS - 1))) begin
+				
+				clearxcounter <= 0;
+				clearycounter <= 0;
+				
+			end	
+			
+			else if ((clearxcounter == (MAX_X_PIXELS - 1)) && (clearycounter < (MAX_Y_PIXELS - 1))) begin //reach end of row
+			
+				clearxcounter <= 0;
+				clearycounter <= clearycounter + 1;
+				
+			end
+			
+			else if ((clearxcounter < (MAX_X_PIXELS - 1)) && (clearycounter < (MAX_Y_PIXELS - 1))) begin
+				
+				clearxcounter <= clearxcounter + 1;
+			
+			end
+		
+		end
 	
 
 
