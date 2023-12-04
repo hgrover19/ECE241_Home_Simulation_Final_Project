@@ -11,7 +11,7 @@ function DOOR  = 0
 
 module project_integration(
 
-	input SW,
+	input [8:0] SW,
 	input [3:0] KEY,
 	input CLOCK_50
 
@@ -26,13 +26,7 @@ module project_integration(
 	wire [7:0] xcoordoutput;
 	wire [6:0] ycoordoutput;
 	//wire [3:0] audoutput;
-	wire [2:0] loadkeyboard;
-	wire roomnoreg;
-	wire loadaudio;
-	wire commandaudioenable;
 	
-	//
-	wire [5:0] coordsel0;
 	
 	//enable signal wires
 	wire enable0;
@@ -99,12 +93,8 @@ module project_integration(
 		.keyboardin(SW[8]),
 		.audin(audin),
 		.xcoord(xcoordoutput),
-		.ycoord(ycoordoutput),
-		//.audout(audoutput),
-		.coordsel0(coordsel0),
-		.loadkeyboard(loadkeyboard),
-		.roomnoreg(roomnoreg),
-		.loadaudio(loadaudio)
+		.ycoord(ycoordoutput)
+		//.audout(audoutput)
 	
 	);
 	
