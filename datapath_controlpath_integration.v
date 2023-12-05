@@ -36,6 +36,7 @@ module project_integration(
 	wire [2:0] loadkeyboard; //
 	wire [7:0] startxcoord;
 	wire [6:0] startycoord;
+	wire [2:0] colour;
 	
 	
 	//enable signal wires
@@ -184,7 +185,7 @@ module controlpath(
 			case(current_state)
 				//IMPLEMENT SETUPSCREEN STATE
 				
-				INPUTS_WAIT: next_state = !loadinputs ? INPUTS_WAIT : LOAD_INPUTS;
+				INPUTS_WAIT: next_state = loadinputs ? LOAD_INPUTS : INPUTS_WAIT;
 				
 				LOAD_INPUTS: begin
 					if (loadinputs) //if input button on, keep waiting
@@ -216,13 +217,13 @@ module controlpath(
 				
 				DONE_DRAW: next_state = DONE;
 				
-				DONE: next_state = LOAD_INPUTS;
+				DONE: next_state = INPUTS_WAIT;
 				
 				CLEAR: next_state = ((clear_x == MAX_X_PIXELS) && (clear_y == MAX_Y_PIXELS)) ? DONE_CLEAR : CLEAR;
 				
 				DONE_CLEAR: next_state = DONE;
 				
-				default: next_state = LOAD_INPUTS;
+				default: next_state = INPUTS_WAIT;
 				
 			endcase
 		end
