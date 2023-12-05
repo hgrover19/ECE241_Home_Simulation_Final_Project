@@ -515,8 +515,6 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 			loadkeyboard <= 0;
 			roomnoreg <= 0;
 			loadaudio <= 0;
-			xcoord <= 0;
-			ycoord <= 0;
 			startxcoord <= 0;
 			startycoord <= 0;
 			
@@ -553,8 +551,6 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 			D4y <= 7'd69;
 
 			//reset output signals
-			xcoord <= 0;
-			ycoord <= 0;
 			//audout <= 0;
 			
 		end
@@ -711,6 +707,13 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 			
 			end
 			
+			else if (clearinitsignal) begin
+				
+					startxcoord <= 0;
+					startycoord <= 0;
+				
+			end
+			
 		
 		end
 		
@@ -723,11 +726,11 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 				plotcounter <= 0;
 				clearxcounter <= 0;
 				clearycounter <= 0;
+				xcoord <= 0;
+				ycoord <= 0;
 			end
 			
 				else if (clearinitsignal) begin
-					startxcoord <= 0;
-					startycoord <= 0;
 					
 					xcoord <= startxcoord + clearxcounter;
 					ycoord <= startycoord + clearycounter;
