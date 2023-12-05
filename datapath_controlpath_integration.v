@@ -23,7 +23,9 @@ module project_integration(
 	//input wires to controlpath and datapath
 	wire keyboardin;
 	wire audin;
-	wire [3:0] plotcounter; 
+	wire [4:0] plotcounter; 
+	
+	wire loadaudio; // 
 	
 	//output wires from datapath
 	wire [7:0] xcoordoutput;
@@ -32,7 +34,7 @@ module project_integration(
 	wire [6:0] clearycoord;
 	wire [7:0] clearxcounter;
 	wire [8:0] clearycounter;
-	//wire [3:0] audoutput;
+	wire [2:0] audoutput;
 	wire [2:0] loadkeyboard; //
 	wire [7:0] startxcoord;
 	wire [6:0] startycoord;
@@ -113,6 +115,7 @@ module project_integration(
 		.MAX_Y_PIXELS(MAX_Y_PIXELS),
 		.xcoord(xcoordoutput), //output x coord to vga adapter
 		.ycoord(ycoordoutput), //output y coord to vga adapter 
+		.loadaudio(loadaudio),
 		
 		//	output reg [7:0] startxcoord,
 	//output reg [6:0] startycoord
@@ -122,7 +125,7 @@ module project_integration(
 		.colour(colour),
 		.clearxcounter(clearxcounter),
 		.clearycounter(clearycounter),
-		//.audout(audoutput)
+		.audout(audoutput),
 		.loadkeyboard(loadkeyboard),
 		.startxcoord(startxcoord),
 		.startycoord(startycoord)
@@ -142,8 +145,7 @@ module controlpath(
 	input keyboardin, //keyboard input (L or D)
 	input audin,	//Audio input (on or off, 1/0)
 	input room0, room1, room2, room3, room4, //switch input (select room number 0-9)
-	input countDone, //VGA Datapath sends countDone = 1 when finished drawing
-	input [3:0] plotcounter,
+	input [4:0] plotcounter,
 	input [7:0] MAX_X_PIXELS,
 	input [6:0] MAX_Y_PIXELS,
 	input [7:0] clear_x,
@@ -171,6 +173,7 @@ module controlpath(
 		ROOM2 = 6'd4,
 		ROOM3 = 6'd5,
 		ROOM4 = 6'd6,
+		
 		
 		DONE_DRAW = 6'd7, //Finish drawing VGA display image, so set Done = 1
 		DONE = 6'd8,	//Reach this state when Done = 1
@@ -205,15 +208,15 @@ module controlpath(
 							
 				end
 				
-				ROOM0: next_state = (plotcounter == 4'd15) ? DONE_DRAW : ROOM0;
+				ROOM0: next_state = (plotcounter == 5'd16) ? DONE_DRAW : ROOM0;
 				
-				ROOM1: next_state = (plotcounter == 4'd15) ? DONE_DRAW : ROOM1;
+				ROOM1: next_state = (plotcounter == 5'd16) ? DONE_DRAW : ROOM1;
 				
-				ROOM2: next_state = (plotcounter == 4'd15) ? DONE_DRAW : ROOM2;
+				ROOM2: next_state = (plotcounter == 5'd16) ? DONE_DRAW : ROOM2;
 				
-				ROOM3: next_state = (plotcounter == 4'd15) ? DONE_DRAW : ROOM3;
+				ROOM3: next_state = (plotcounter == 5'd16) ? DONE_DRAW : ROOM3;
 				
-				ROOM4: next_state = (plotcounter == 4'd15) ? DONE_DRAW : ROOM4;
+				ROOM4: next_state = (plotcounter == 5'd16) ? DONE_DRAW : ROOM4;
 				
 				DONE_DRAW: next_state = DONE;
 				
@@ -407,6 +410,9 @@ module controlpath(
 				
 			else if (clear)
 				current_state <= CLEAR;
+				
+			else if (plotcounter == 5'd16)
+				current_state <= next_state;
 			
 			else
 				current_state <= next_state;
@@ -434,21 +440,22 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 	input [6:0] MAX_Y_PIXELS,
 	output reg [7:0] xcoord, 
 	output reg [6:0] ycoord,
-	output reg [3:0] plotcounter,
+	output reg [4:0] plotcounter,
 	output reg [2:0] colour,
 	output reg [7:0] clearxcounter,
 	output reg [8:0] clearycounter,
 	output reg [2:0]loadkeyboard,
 	output reg [7:0] startxcoord,
-	output reg [6:0] startycoord
-	//output reg [3:0] audout
+	output reg [6:0] startycoord,
+	output reg loadaudio,
+	output reg [3:0] audout
 
 );
 	
 	//declare storage registers
 	//reg [2:0]loadkeyboard; //register storing keyboard input
 	reg roomnoreg; //register storing room number
-	reg loadaudio; //register storing audio input
+	//reg loadaudio; //register storing audio input
 	//reg [7:0] startxcoord;
 	//reg [6:0] startycoord;
 	
@@ -475,12 +482,11 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 	reg [5:0] coordsel0, coordsel1, coordsel2, coordsel3, coordsel4; //to select x and y coordinates for each room (add back coordsel0)
 	
 	//load audio signal registers
-	/*
 	reg [3:0] L1aud;
 	reg [3:0] L0aud;
 	reg [3:0] D1aud;
 	reg [3:0] D0aud;
-	*/
+	reg [3:0] alllockedaud;
 			
 	//also, load x and y coordinates for each vga display image
 	reg [7:0] L0x;
@@ -519,11 +525,14 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 			startxcoord <= 0;
 			startycoord <= 0;
 			
+			
 			//load audio signal registers
-			//L1aud <= 3'b000;
-			//L0aud <= 3'b001;
-			//D1aud <= 3'b010;
-			//D0aud <= 3'b011;
+			L1aud <= 3'b000;
+			L0aud <= 3'b001;
+			D1aud <= 3'b010;
+			D0aud <= 3'b011;
+			alllockedaud <= 3'b100;
+			
 			
 			//also, load x and y coordinates for each vga display image
 			L0x <= 8'd60;
@@ -552,7 +561,7 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 			D4y <= 7'd69;
 
 			//reset output signals
-			//audout <= 0;
+			audout <= 0;
 			
 		end
 		
@@ -715,6 +724,47 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 				
 			end
 			
+			
+			case (selfunct)
+				
+				2'b00: begin //case: L mode
+				
+					if (selonoff == 1'b0) begin
+						audout <= L0aud;
+					end
+					
+					else if (selonoff == 1'b1) begin
+						audout <= L1aud;
+					end
+					
+				end
+				
+				2'b10: begin //case: D mode
+				
+					if (selonoff == 1'b0) begin
+						audout <= D0aud;
+					end
+					
+					else if (selonoff == 1'b1) begin
+						audout <= D1aud;
+					end
+			
+				end
+				
+				2'b01: begin //case all locked mode
+				
+					audout <= alllockedaud;
+				
+				end
+				
+				default: begin
+				
+					audout <= 4'b0;
+					
+				end
+					
+			
+			endcase
 		
 		end
 		
@@ -731,6 +781,12 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 				ycoord <= 0;
 			end
 			
+				else if (plotcounter == 5'd16) begin
+					
+					plotcounter <= 0;
+					
+				end
+			
 				else if (clearinitsignal) begin
 					
 					xcoord <= startxcoord + clearxcounter;
@@ -739,7 +795,7 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 					
 				end
 				
-				else if ((drawen == 1'b1) && (audin == 1'b1)) begin //when the door/light is ON
+				else if ((drawen == 1'b1) && (loadaudio == 1'b1)) begin //when the door/light is ON
 				
 					xcoord <= startxcoord + plotcounter[1:0];
 					ycoord <= startycoord + plotcounter[3:2];
@@ -748,19 +804,13 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 				
 				end
 				
-				else if ((drawen == 1'b1) && (audin == 1'b0)) begin //when the door/light is OFF
+				else if ((drawen == 1'b1) && (loadaudio == 1'b0)) begin //when the door/light is OFF
 				
 					xcoord <= startxcoord + plotcounter[1:0];
 					ycoord <= startycoord + plotcounter[3:2];
 					colour <= 3'b111;
 					plotcounter <= plotcounter + 1;
 				
-				end
-				
-				else if (plotcounter == 4'd15) begin
-					
-					plotcounter <= 0;
-					
 				end
 				
 				else if ((clearxcounter == (MAX_X_PIXELS - 1)) && (clearycounter == (MAX_Y_PIXELS - 1))) begin
