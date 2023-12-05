@@ -1,0 +1,194 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dC:/Users/Administrator/OneDrive - University of Toronto/Year 2 Courses/Digital Systems (ECE 241)/Project/keyboardAttempt4
+vaudio
+Z1 !s110 1701646166
+!i10b 1
+!s100 YRdgP6ml8<`SVM5>9]fQI2
+IZg8jbI2TCOXYTHVkNMCmV2
+Z2 VDg1SIo80bB@j0V0VzS_@n1
+R0
+w1701538225
+8audio.v
+Faudio.v
+L0 9
+Z3 OV;L;10.5b;63
+r1
+!s85 0
+31
+Z4 !s108 1701646166.000000
+!s107 audio.v|
+!s90 -reportprogress|300|audio.v|
+!i113 1
+Z5 tCvgOpt 0
+vhexDisplay
+Z6 !s110 1701802919
+!i10b 1
+!s100 UCcEM462F4_0ME2AM<>N53
+ILNDz^HB9>H390gWUf4aJ03
+R2
+R0
+w1701647034
+8hexDisplay.v
+FhexDisplay.v
+L0 1
+R3
+r1
+!s85 0
+31
+Z7 !s108 1701802919.000000
+!s107 hexDisplay.v|
+!s90 -reportprogress|300|hexDisplay.v|
+!i113 1
+R5
+nhex@display
+vi2c_av_cfg
+R1
+!i10b 1
+!s100 g?oLgoFgoBT2_h[jPHX2H2
+If]P[i;FK^[:gJ@`@NM1Ej3
+R2
+R0
+Z8 w1701285136
+8i2c_av_cfg.v
+Fi2c_av_cfg.v
+L0 8
+R3
+r1
+!s85 0
+31
+R4
+!s107 i2c_av_cfg.v|
+!s90 -reportprogress|300|i2c_av_cfg.v|
+!i113 1
+R5
+vI2C_programmer
+R1
+!i10b 1
+!s100 0J>1CO=m70mAANo75T8l<3
+IWiO=i^QgG^f8l3B9S;9iA2
+R2
+R0
+w1701538321
+8I2C_programmer.v
+FI2C_programmer.v
+L0 11
+R3
+r1
+!s85 0
+31
+R4
+!s107 I2C_programmer.v|
+!s90 -reportprogress|300|I2C_programmer.v|
+!i113 1
+R5
+n@i2@c_programmer
+vkeyboardAttempt4
+R6
+!i10b 1
+!s100 oc6o;_Eho=6`;Wf:Hf0Ln1
+I>S?;Wh4FB9ogiWnCIzzZc3
+R2
+R0
+w1701802911
+8keyboardAttempt4.v
+FkeyboardAttempt4.v
+L0 8
+R3
+r1
+!s85 0
+31
+R7
+!s107 keyboardAttempt4.v|
+!s90 -reportprogress|300|keyboardAttempt4.v|
+!i113 1
+R5
+nkeyboard@attempt4
+vnf_clapDetected
+R1
+!i10b 1
+!s100 70njbU_L0fS^;0<_`IG5B0
+IZkVii24Yf]bGd3ik[m9LI1
+R2
+R0
+w1701645222
+8nf_clapDetected.v
+Fnf_clapDetected.v
+L0 1
+R3
+r1
+!s85 0
+31
+R4
+!s107 nf_clapDetected.v|
+!s90 -reportprogress|300|nf_clapDetected.v|
+!i113 1
+R5
+nnf_clap@detected
+vnf_top_level_module
+Z9 !s110 1701646167
+!i10b 1
+!s100 31Bj1;M7bZZ=6E19e;8X_1
+INk0:P6GEOSPlgP9d49`QK1
+R2
+R0
+w1701533862
+8nf_top_level_module.v
+Fnf_top_level_module.v
+L0 1
+R3
+r1
+!s85 0
+31
+Z10 !s108 1701646167.000000
+!s107 nf_top_level_module.v|
+!s90 -reportprogress|300|nf_top_level_module.v|
+!i113 1
+R5
+vserial_adc
+R9
+!i10b 1
+!s100 VhElJ6=8]0]IcIgBL:=>92
+IRnnk_RRaTl`UoL[V^iLNB0
+R2
+R0
+R8
+8serial_adc.v
+Fserial_adc.v
+L0 8
+R3
+r1
+!s85 0
+31
+R10
+!s107 serial_adc.v|
+!s90 -reportprogress|300|serial_adc.v|
+!i113 1
+R5
+vserial_dac
+R9
+!i10b 1
+!s100 nKEb7c]oHV^=N]MQT;HR[2
+ILD1Sa<dh18XW[EiTCJ8Q72
+R2
+R0
+w1701646162
+8serial_dac.v
+Fserial_dac.v
+L0 8
+R3
+r1
+!s85 0
+31
+R10
+!s107 serial_dac.v|
+!s90 -reportprogress|300|serial_dac.v|
+!i113 1
+R5

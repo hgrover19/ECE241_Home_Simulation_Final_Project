@@ -1,0 +1,50 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dC:/Users/Administrator/OneDrive - University of Toronto/Year 2 Courses/Digital Systems (ECE 241)/Project/keyboardAttempt4/mouse
+vmouse
+Z1 !s110 1701801213
+!i10b 1
+!s100 RT[zQc3WiK]7KNH36`;eW3
+IOW9MbKMHjfZ<mF3:nY^8M3
+Z2 VDg1SIo80bB@j0V0VzS_@n1
+R0
+w1701797562
+8mouse.v
+Fmouse.v
+L0 12
+Z3 OV;L;10.5b;63
+r1
+!s85 0
+31
+Z4 !s108 1701801213.000000
+!s107 mouse.v|
+!s90 -reportprogress|300|mouse.v|
+!i113 1
+Z5 tCvgOpt 0
+vtransmit
+R1
+!i10b 1
+!s100 Rg_27_?HJLVM=8GTjbEM[0
+IJJMmXjj699]@?0N;VSJ7[0
+R2
+R0
+w1701801197
+8transmit.v
+Ftransmit.v
+L0 8
+R3
+r1
+!s85 0
+31
+R4
+!s107 transmit.v|
+!s90 -reportprogress|300|transmit.v|
+!i113 1
+R5
