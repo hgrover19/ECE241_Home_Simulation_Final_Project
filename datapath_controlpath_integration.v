@@ -30,7 +30,12 @@ module project_integration(
 	wire [6:0] ycoordoutput;
 	wire [7:0] clearxcoord;
 	wire [6:0] clearycoord;
+	wire [7:0] clearxcounter;
+	wire [8:0] clearycounter;
 	//wire [3:0] audoutput;
+	wire [2:0] loadkeyboard; //
+	wire [7:0] startxcoord;
+	wire [6:0] startycoord;
 	
 	
 	//enable signal wires
@@ -54,7 +59,7 @@ module project_integration(
 		.reset(KEY[0]),
 		.clear(KEY[2]),
 		.keyboardin(SW[8]),
-		.audin(audin),
+		.audin(SW[6]),
 		.room0(SW[0]),
 		.room1(SW[1]),
 		.room2(SW[2]),
@@ -101,17 +106,25 @@ module project_integration(
 		.selfunct(selfunction),
 		.clearinitsignal(clearstart),
 		.keyboardin(SW[8]),
-		.audin(audin),
+		.audin(SW[6]),
 		.drawen(drawen),
 		.MAX_X_PIXELS(MAX_X_PIXELS),
 		.MAX_Y_PIXELS(MAX_Y_PIXELS),
-		.xcoord(xcoord),
-		.ycoord(ycoord),
+		.xcoord(xcoordoutput), //output x coord to vga adapter
+		.ycoord(ycoordoutput), //output y coord to vga adapter 
+		
+		//	output reg [7:0] startxcoord,
+	//output reg [6:0] startycoord
+		
+		
 		.plotcounter(plotcounter),
 		.colour(colour),
 		.clearxcounter(clearxcounter),
-		.clearycounter(clearycounter)
+		.clearycounter(clearycounter),
 		//.audout(audoutput)
+		.loadkeyboard(loadkeyboard),
+		.startxcoord(startxcoord),
+		.startycoord(startycoord)
 	
 	);
 	
@@ -237,147 +250,146 @@ module controlpath(
 			case(current_state)
 			
 				LOAD_INPUTS: begin
-					loadenable = 1'b1;
-					drawen = 1'b1;
+					loadenable <= 1'b1;
 					if (room0 == 1'b1) //when load is enabled, also send signal to multiplexer that inputs switch input into sw input register
-						selsw = 3'd0;
+						selsw <= 3'd0;
 					else if (room1 == 1'b1)
-						selsw = 3'd1;
+						selsw <= 3'd1;
 					else if (room2 == 1'b1)
-						selsw = 3'd2;
+						selsw <= 3'd2;
 					else if (room3 == 1'b1)
-						selsw = 3'd3;
+						selsw <= 3'd3;
 					else if (room4 == 1'b1)
-						selsw = 3'd4;
+						selsw <= 3'd4;
 				end
 				
 				ROOM0: begin //When we have selected room 1, pass input function (L or D) and ON?OFF input to Room 0 registers
-					enable0 = 1'b1;
-					drawen = 1'b1;
+					enable0 <= 1'b1;
+					drawen <= 1'b1;
 					if (keyboardin == 1 && audin == 0) begin//Enable signals for audio output
-						selonoff = 1'b0; //where 0 selects OFF
-						selfunct = 2'b00; //where 1 selects Light function
+						selonoff <= 1'b0; //where 0 selects OFF
+						selfunct <= 2'b00; //where 1 selects Light function
 					end
 					
 					else if (keyboardin == 1 && audin == 1) begin//select audio message for L11
-						selonoff = 1'b1; 	
-						selfunct = 2'b00; 
+						selonoff <= 1'b1; 	
+						selfunct <= 2'b00; 
 					end
 					
 					else if (keyboardin == 0 && audin == 0) begin//select audio message for D00
-						selonoff = 1'b0; 
-						selfunct = 2'b10; 
+						selonoff <= 1'b0; 
+						selfunct <= 2'b10; 
 					end
 					
 					else if (keyboardin == 0 && audin == 1) begin//select audio message for D01
-						selonoff = 1'b1; 
-						selfunct = 2'b10; 
+						selonoff <= 1'b1; 
+						selfunct <= 2'b10; 
 					end
 					
 				end 
 				
 				ROOM1: begin
-					enable1 = 1'b1;
-					drawen  = 1'b1;
+					enable1 <= 1'b1;
+					drawen  <= 1'b1;
 					if (keyboardin == 1 && audin == 0) begin//Enable signals for audio output
-						selonoff = 1'b0; //where 0 selects OFF
-						selfunct = 2'b00; //where 1 selects Light function
+						selonoff <= 1'b0; //where 0 selects OFF
+						selfunct <= 2'b00; //where 1 selects Light function
 					end
 					
 					else if (keyboardin == 1 && audin == 1) begin//select audio message for L11
-						selonoff = 1'b1; 
-						selfunct = 2'b00; 
+						selonoff <= 1'b1; 
+						selfunct <= 2'b00; 
 					end
 					
 					else if (keyboardin == 0 && audin == 0) begin//select audio message for D00
-						selonoff = 1'b0; 
-						selfunct = 2'b10; 
+						selonoff <= 1'b0; 
+						selfunct <= 2'b10; 
 					end
 					
 					else if (keyboardin == 0 && audin == 1) begin//select audio message for D01
-						selonoff = 1'b1; 
-						selfunct = 2'b10; 
+						selonoff <= 1'b1; 
+						selfunct <= 2'b10; 
 					end
 				end
 				
 				ROOM2: begin
-					enable2 = 1'b1;
-					drawen = 1'b1;
+					enable2 <= 1'b1;
+					drawen <= 1'b1;
 					if (keyboardin == 1 && audin == 0) begin//Enable signals for audio output
-						selonoff = 1'b0; //where 0 selects OFF
-						selfunct = 2'b00; //where 1 selects Light function
+						selonoff <= 1'b0; //where 0 selects OFF
+						selfunct <= 2'b00; //where 1 selects Light function
 					end
 					
 					else if (keyboardin == 1 && audin == 1) begin//select audio message for L11
-						selonoff = 1'b1; 
-						selfunct = 2'b00; 
+						selonoff <= 1'b1; 
+						selfunct <= 2'b00; 
 					end
 					
 					else if (keyboardin == 0 && audin == 0) begin//select audio message for D00
-						selonoff = 1'b0; 
-						selfunct = 2'b10; 
+						selonoff <= 1'b0; 
+						selfunct <= 2'b10; 
 					end
 					
 					else if (keyboardin == 0 && audin == 1) begin//select audio message for D01
-						selonoff = 1'b1; 
-						selfunct = 2'b10; 
+						selonoff <= 1'b1; 
+						selfunct <= 2'b10; 
 					end
 				end
 				
 				ROOM3: begin
-					enable3 = 1'b1;
-					drawen = 1'b1;
+					enable3 <= 1'b1;
+					drawen <= 1'b1;
 					if (keyboardin == 1 && audin == 0) begin//Enable signals for audio output
-						selonoff = 1'b0; //where 0 selects OFF
-						selfunct = 2'b00; //where 1 selects Light function
+						selonoff <= 1'b0; //where 0 selects OFF
+						selfunct <= 2'b00; //where 1 selects Light function
 					end
 					
 					else if (keyboardin == 1 && audin == 1) begin//select audio message for L11
-						selonoff = 1'b1; 
-						selfunct = 2'b00; 
+						selonoff <= 1'b1; 
+						selfunct <= 2'b00; 
 					end
 					
 					else if (keyboardin == 0 && audin == 0) begin//select audio message for D00
-						selonoff = 1'b0; 
-						selfunct = 2'b10; 
+						selonoff <= 1'b0; 
+						selfunct <= 2'b10; 
 					end
 					
 					else if (keyboardin == 0 && audin == 1) begin//select audio message for D01
-						selonoff = 1'b1; 
-						selfunct = 2'b10; 
+						selonoff <= 1'b1; 
+						selfunct <= 2'b10; 
 					end
 				end
 				
 				ROOM4: begin
-					enable4 = 1'b1;
-					drawen = 1'b1;
+					enable4 <= 1'b1;
+					drawen <= 1'b1;
 					if (keyboardin == 1 && audin == 0) begin//Enable signals for audio output
-						selonoff = 1'b0; //where 0 selects OFF
-						selfunct = 2'b00; //where 1 selects Light function
+						selonoff <= 1'b0; //where 0 selects OFF
+						selfunct <= 2'b00; //where 1 selects Light function
 					end
 					
 					else if (keyboardin == 1 && audin == 1) begin//select audio message for L11
-						selonoff = 1'b1; 
-						selfunct = 2'b00; 
+						selonoff <= 1'b1; 
+						selfunct <= 2'b00; 
 					end
 					
 					else if (keyboardin == 0 && audin == 0) begin//select audio message for D00
-						selonoff = 1'b0; 
-						selfunct = 2'b10; 
+						selonoff <= 1'b0; 
+						selfunct <= 2'b10; 
 					end
 					
 					else if (keyboardin == 0 && audin == 1) begin//select audio message for D01
-						selonoff = 1'b1; 
-						selfunct = 2'b10; 
+						selonoff <= 1'b1; 
+						selfunct <= 2'b10; 
 					end
 				end
 				
 				DONE: begin
-					commandaudioenable = 1'b1;
+					commandaudioenable <= 1'b1;
 				end
 				
 				CLEAR: begin
-					clearinitsignal = 1'b1;
+					clearinitsignal <= 1'b1;
 				end
 			
 			endcase
@@ -424,19 +436,20 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 	output reg [3:0] plotcounter,
 	output reg [2:0] colour,
 	output reg [7:0] clearxcounter,
-	output reg [8:0] clearycounter
+	output reg [8:0] clearycounter,
+	output reg [2:0]loadkeyboard,
+	output reg [7:0] startxcoord,
+	output reg [6:0] startycoord
 	//output reg [3:0] audout
 
 );
 	
 	//declare storage registers
-	reg [2:0]loadkeyboard; //register storing keyboard input
+	//reg [2:0]loadkeyboard; //register storing keyboard input
 	reg roomnoreg; //register storing room number
 	reg loadaudio; //register storing audio input
-	reg [7:0] x_register;
-	reg [6:0] y_register;
-	reg [7:0] startxcoord;
-	reg [6:0] startycoord;
+	//reg [7:0] startxcoord;
+	//reg [6:0] startycoord;
 	
 	//ROOM 0 REGISTERS
 	//reg funct0;
@@ -502,6 +515,10 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 			loadkeyboard <= 0;
 			roomnoreg <= 0;
 			loadaudio <= 0;
+			xcoord <= 0;
+			ycoord <= 0;
+			startxcoord <= 0;
+			startycoord <= 0;
 			
 			//load audio signal registers
 			//L1aud <= 3'b000;
@@ -553,15 +570,15 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 				case (selsw) //select switch input to store into room number register
 				
 					3'd0: 
-						roomnoreg = room1;
+						roomnoreg <= room1;
 					3'd1:
-						roomnoreg = room1;
+						roomnoreg <= room1;
 					3'd2:
-						roomnoreg = room2;
+						roomnoreg <= room2;
 					3'd3:
-						roomnoreg = room3;
+						roomnoreg <= room3;
 					3'd4:
-						roomnoreg = room4;
+						roomnoreg <= room4;
 						
 					default: roomnoreg =1'b0;
 					
@@ -694,32 +711,6 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 			
 			end
 			
-			else if (clearinitsignal) begin
-				startxcoord <= 0;
-				startycoord <= 0;
-				
-				xcoord <= clearxcounter;
-				ycoord <= clearycounter;
-				colour <= 3'b0;
-				
-			end
-			
-			else if ((drawen == 1'b1) && (loadkeyboard == 1'b1)) begin //when the door/light is ON
-			
-				xcoord <= x_register + plotcounter[1:0];
-				ycoord <= y_register + plotcounter[3:2];
-				colour <= 3'b110;
-			
-			end
-			
-			else if ((drawen == 1'b1) && (loadkeyboard == 1'b0)) begin //when the door/light is OFF
-			
-				xcoord <= x_register + plotcounter[1:0];
-				ycoord <= y_register + plotcounter[3:2];
-				colour <= 3'b111;
-			
-			end
-			
 		
 		end
 		
@@ -734,37 +725,59 @@ module datapath( //note: instantiate room coordinate selection FSMs inside datap
 				clearycounter <= 0;
 			end
 			
-			else if (drawen) begin
+				else if (clearinitsignal) begin
+					startxcoord <= 0;
+					startycoord <= 0;
+					
+					xcoord <= startxcoord + clearxcounter;
+					ycoord <= startycoord + clearycounter;
+					colour <= 3'b0;
+					
+				end
 				
-				plotcounter <= plotcounter + 1;
+				else if ((drawen == 1'b1) && (audin == 1'b1)) begin //when the door/light is ON
 				
-			end
-			
-			else if (plotcounter == 4'd15) begin
+					xcoord <= startxcoord + plotcounter[1:0];
+					ycoord <= startycoord + plotcounter[3:2];
+					colour <= 3'b110; //colour = yellow
+					plotcounter <= plotcounter + 1;
 				
-				plotcounter <= 0;
+				end
 				
-			end
-			
-			else if ((clearxcounter == (MAX_X_PIXELS - 1)) && (clearycounter == (MAX_Y_PIXELS - 1))) begin
+				else if ((drawen == 1'b1) && (audin == 1'b0)) begin //when the door/light is OFF
 				
-				clearxcounter <= 0;
-				clearycounter <= 0;
+					xcoord <= startxcoord + plotcounter[1:0];
+					ycoord <= startycoord + plotcounter[3:2];
+					colour <= 3'b111;
+					plotcounter <= plotcounter + 1;
 				
-			end	
-			
-			else if ((clearxcounter == (MAX_X_PIXELS - 1)) && (clearycounter < (MAX_Y_PIXELS - 1))) begin //reach end of row
-			
-				clearxcounter <= 0;
-				clearycounter <= clearycounter + 1;
+				end
 				
-			end
-			
-			else if ((clearxcounter < (MAX_X_PIXELS - 1)) && (clearycounter < (MAX_Y_PIXELS - 1))) begin
+				else if (plotcounter == 4'd15) begin
+					
+					plotcounter <= 0;
+					
+				end
 				
-				clearxcounter <= clearxcounter + 1;
-			
-			end
+				else if ((clearxcounter == (MAX_X_PIXELS - 1)) && (clearycounter == (MAX_Y_PIXELS - 1))) begin
+					
+					clearxcounter <= 0;
+					clearycounter <= 0;
+					
+				end	
+				
+				else if (clearxcounter == (MAX_X_PIXELS - 1)) begin //reach end of row
+				
+					clearxcounter <= 0;
+					clearycounter <= clearycounter + 1;
+					
+				end
+				
+				else if (clearinitsignal) begin
+					
+					clearxcounter <= clearxcounter + 1;
+				
+				end
 		
 		end
 	
